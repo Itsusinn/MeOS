@@ -9,8 +9,6 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
 
 mod frame_buffer;
 
-use core::fmt::Write;
-
 use bootloader_api::config::{BootloaderConfig, Mapping};
 use bootloader_api::info::Optional;
 use bootloader_api::{entry_point, BootInfo};
@@ -28,8 +26,11 @@ entry_point!(kernel_main, config = &BOOTLOADER_CONFIG);
 fn kernel_main(boot_info: &'static mut BootInfo) -> ! {
     if let Optional::Some(buffer) = &mut boot_info.framebuffer {
         let info = buffer.info();
-        let mut writer = FrameBufferWriter::new(buffer.buffer_mut(), info);
-        writer.write_str("Hello World! This is an os made by iHsin!").unwrap();
+        let writer = FrameBufferWriter::new(buffer.buffer_mut(), info);
+        frame_buffer::init_writer(writer);
     };
+    println!("Hello World! {}", "This is an os made by iHsin!");
+    let art = include_str!("ascii_art.txt");
+    println!("{}", art);
     loop {}
 }

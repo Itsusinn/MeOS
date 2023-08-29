@@ -16,11 +16,11 @@ fn main() {
         cmd.arg("-drive")
             .arg(format!("format=raw,file={uefi_path}"));
         cmd.arg("-display").arg("spice-app");
+        cmd.arg("-no-reboot").arg("-no-shutdown");
     } else {
         cmd.arg("-drive")
             .arg(format!("format=raw,file={bios_path}"));
         cmd.arg("-display").arg("spice-app");
-        // cmd.arg("-vga").arg("std");
         cmd.arg("-no-reboot").arg("-no-shutdown");
     };
     let mut child = cmd.spawn().unwrap();

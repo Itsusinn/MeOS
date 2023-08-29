@@ -1,7 +1,7 @@
 use core::{fmt, ptr};
 
 use bootloader_api::info::{FrameBufferInfo, PixelFormat};
-use noto_sans_mono_bitmap::{RasterizedChar, get_raster};
+use noto_sans_mono_bitmap::{get_raster, RasterizedChar};
 
 use crate::frame_buffer::font_constants::*;
 
@@ -15,7 +15,7 @@ const BORDER_PADDING: usize = 1;
 
 /// Constants for the usage of the [`noto_sans_mono_bitmap`] crate.
 mod font_constants {
-    use noto_sans_mono_bitmap::{RasterHeight, get_raster_width, FontWeight};
+    use noto_sans_mono_bitmap::{get_raster_width, FontWeight, RasterHeight};
 
     /// Height of each char raster. The font size is ~0.84% of this. Thus, this is the line height that
     /// enables multiple characters to be side-by-side and appear optically in one line in a natural way.
@@ -151,4 +151,31 @@ impl fmt::Write for FrameBufferWriter {
         }
         Ok(())
     }
+}
+use spin::Mutex;
+use spin::Once;
+
+static WRITER: Once<Mutex<FrameBufferWriter>> = Once::new();
+
+pub fn init_writer(writer: FrameBufferWriter) {
+    WRITER.call_once(move || Mutex::new(writer));
+    // let _ = WRITER.lock().insert(writer);
+}
+
+#[macro_export]
+macro_rules! print {
+    ($($arg:tt)*) => ($crate::frame_buffer::_print(format_args!($($arg)*)));
+}
+
+#[macro_export]
+macro_rules! println {
+    () => ($crate::print!("\n"));
+    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
+}
+
+#[doc(hidden)]
+pub fn _print(args: fmt::Arguments) {
+    use core::fmt::Write;
+    let mut writer = WRITER.get().unwrap().lock();
+    writer.write_fmt(args).unwrap();
 }
