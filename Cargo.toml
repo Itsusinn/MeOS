@@ -12,11 +12,28 @@ ovmf-prebuilt = "0.1.0-alpha.1"
 bootloader = "0.11"
 kernel = { path = "kernel", artifact = "bin", target = "x86_64-unknown-none" }
 
+[features]
+test = ["kernel/test"]
+
 [workspace]
-members = ["kernel"]
+members = ["kernel", "testing", "testing/derive"]
+
+[workspace.dependencies]
+thiserror = { version = "1.0", package = "thiserror-core", default-features = false }
+x86_64 = "0.14.10"
+paste = "1.0.12"
+linkme = "0.3.10"
+proc-macro2 = "1.0.58"
+log = "0.4.20"
+quote = "1.0.27"
+syn = { version = "2.0.16", features = ["full"] }
 
 [profile.dev]
 panic = "abort"
 
 [profile.release]
 panic = "abort"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"

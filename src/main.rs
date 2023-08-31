@@ -5,9 +5,12 @@ fn main() {
     let uefi_path = env!("UEFI_PATH");
     let bios_path = env!("BIOS_PATH");
     let kernel_path = env!("KERNEL_PATH");
+
     // choose whether to start the UEFI or BIOS image
     let uefi = false;
+
     println!("kernel path {}", kernel_path);
+
     println!("bios path {}", bios_path);
 
     let mut cmd = std::process::Command::new("qemu-system-x86_64");
@@ -17,11 +20,15 @@ fn main() {
             .arg(format!("format=raw,file={uefi_path}"));
         cmd.arg("-display").arg("spice-app");
         cmd.arg("-no-reboot").arg("-no-shutdown");
+        cmd.arg("-device")
+            .arg("isa-debug-exit,iobase=0xf4,iosize=0x04");
     } else {
         cmd.arg("-drive")
             .arg(format!("format=raw,file={bios_path}"));
         cmd.arg("-display").arg("spice-app");
         cmd.arg("-no-reboot").arg("-no-shutdown");
+        cmd.arg("-device")
+            .arg("isa-debug-exit,iobase=0xf4,iosize=0x04");
     };
     let mut child = cmd.spawn().unwrap();
     child.wait().unwrap();

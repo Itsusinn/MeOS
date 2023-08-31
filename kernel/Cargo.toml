@@ -1,17 +1,18 @@
 [package]
 name = "kernel"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
 bootloader_api = "0.11.4"
 noto-sans-mono-bitmap = "0.2.0"
+x86_64 = "0.14.2"
 # once_cell = { version = "1.18.0", default-features = false, features = ["critical-section"]}
 # critical-section = "1.1.2"
 # lazy_static = { version = "1.4.0", features = ["spin_no_std"]}
 spin = { version = "0.9.8", features = ["lazy"] }
+testing = { path = "../testing" }
+linkme.workspace = true
 
-
-# alloc = ""
-# [build-dependencies]
-# bootloader = "0.11.4"
+[features]
+test = []
